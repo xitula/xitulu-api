@@ -5,6 +5,7 @@ package router
 
 import (
 	"fmt"
+	"strconv"
 	"xitulu/model"
 
 	t "xitulu/types"
@@ -24,38 +25,48 @@ func registerTodo(r *gin.Engine) {
 
 	// 返回指定ID的数据
 	r.GET("/todo/:id", func(ctx *gin.Context) {
-		id := ctx.Params.ByName("id")
-		params := t.ReqParams{"id": id}
-		data, err := model.SelectTodo(params)
+		sId := ctx.Params.ByName("id")
+		id, errId := strconv.ParseInt(sId, 10, 64)
+		if errId != nil {
+			response(ctx, errId)
+		}
+		data, err := model.SelectTodo(id)
 		responseData(ctx, err, data)
 	})
 
 	// 新增
 	r.POST("/todo", func(ctx *gin.Context) {
-		contant := ctx.PostForm("contant")
-		description := ctx.PostForm("description")
-		params := map[string]string{"contant": contant, "description": description}
-		fmt.Println(params)
-		err := model.InsertTodo(params)
+		todo := t.Todo{}
+		errBind := ctx.BindJSON(&todo)
+		if errBind != nil {
+			response(ctx, errBind)
+			return
+		}
+		fmt.Println("todo", todo)
+		err := model.InsertTodo(todo)
 		response(ctx, err)
 	})
 
 	// 更新
-	r.PUT("/todo/:id", func(ctx *gin.Context) {
-		id := ctx.Params.ByName("id")
-		contant := ctx.PostForm("contant")
-		description := ctx.PostForm("description")
-		params := map[string]string{"id": id, "contant": contant, "description": description}
-		fmt.Println(params)
-		err := model.UpdateTodo(params)
+	r.PUT("/todo", func(ctx *gin.Context) {
+		todo := t.Todo{}
+		errBind := ctx.BindJSON(&todo)
+		if errBind != nil {
+			response(ctx, errBind)
+			return
+		}
+		err := model.UpdateTodo(todo)
 		response(ctx, err)
 	})
 
 	// 删除
 	r.DELETE("/todo/:id", func(ctx *gin.Context) {
-		id := ctx.Params.ByName("id")
-		params := t.ReqParams{"id": id}
-		err := model.DeleteTodo(params)
-		response(ctx, err)
+		sId := ctx.Params.ByName("id")
+		id, errId := strconv.ParseInt(sId, 10, 64)
+		if errId != nil {
+			response(ctx, errId)
+		}
+		errExec := model.DeleteTodo(id)
+		response(ctx, errExec)
 	})
 }

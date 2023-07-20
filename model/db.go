@@ -5,7 +5,8 @@ package model
 
 import (
 	"database/sql"
-	"os"
+	"log"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -24,23 +25,30 @@ func SetupDb() {
 	}
 }
 
-func makeSql(sql string, params map[string]string) string {
-	return os.Expand(sql, func(key string) string { return params[key] })
-}
-
 /*
 @Description 执行查询并返回数据
 */
-func dbQuery(sqlString string) (interface{}, error) {
-	rows, err := db.Query(sqlString)
+func dbQuery(sql string, params ...interface{}) (interface{}, error) {
+	trans, err := db.Begin()
 	if err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
-	defer rows.Close()
+	stmt, err := trans.Prepare(sql)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	rows, err := stmt.Query(params...)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
 	columns, err := rows.Columns()
 	if err != nil {
 		return nil, err
 	}
+
 	count := len(columns)
 	tableData := make([]map[string]interface{}, 0)
 	values := make([]interface{}, count)
@@ -57,6 +65,9 @@ func dbQuery(sqlString string) (interface{}, error) {
 			b, ok := val.([]byte)
 			if ok {
 				v = string(b)
+				if nx, ok := strconv.ParseFloat(string(b), 64); ok == nil {
+					v = nx
+				}
 			} else {
 				v = val
 			}
@@ -64,22 +75,39 @@ func dbQuery(sqlString string) (interface{}, error) {
 		}
 		tableData = append(tableData, entry)
 	}
+
+	commitErr := trans.Commit()
+	if commitErr != nil {
+		return nil, commitErr
+	}
 	return tableData, nil
 }
 
 /*
 @Description 执行SQL并返回结果
 */
-func dbExec(sql string) (int64, error) {
-	result, err := db.Exec(sql)
+func dbExec(sql string, params ...interface{}) (int64, error) {
+	trans, err := db.Begin()
+	if err != nil {
+		log.Fatalln(err)
+		return 0, err
+	}
+	stmt, err := trans.Prepare(sql)
+	if err != nil {
+		log.Fatalln(err)
+		return 0, err
+	}
+	res, err := stmt.Exec(params...)
+	if err != nil {
+		log.Fatalln(err)
+		return 0, err
+	}
+	affectedCount, err := res.RowsAffected()
 	if err != nil {
 		return 0, err
 	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return 0, err
-	}
-	return rowsAffected, err
+	trans.Commit()
+	return affectedCount, nil
 }
 
 /*

@@ -17,9 +17,10 @@ type Res struct {
 
 // 代办事项
 type Todo struct {
-	Id             string `json:"id"`                    // ID
+	Id             int    `json:"id"`                    // ID
 	Contant        string `json:"contant"`               // 内容
 	Description    string `json:"description,omitempty"` // 描述，可选
 	CreateDate     string `json:"createDate"`            // 创建日期
+	Done           int    `json:"done"`                  // 是否已完成
 	LastUpdateDate string `json:"lastUpdateDate"`        // 最后更新日期，可选
 }

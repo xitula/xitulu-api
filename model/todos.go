@@ -15,7 +15,8 @@ import (
 @Description 查询所有数据
 */
 func SelectTodos() (interface{}, error) {
-	results, err := dbQuery("SELECT * FROM todos ORDER BY createDate DESC")
+	const sql = "SELECT * FROM todos ORDER BY id"
+	results, err := dbQuery(sql)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -26,9 +27,9 @@ func SelectTodos() (interface{}, error) {
 /*
 @Description 查询指定ID的条目
 */
-func SelectTodo(params t.ReqParams) (interface{}, error) {
-	sql := makeSql(`SELECT * FROM todos WHERE id = ${id}`, params)
-	results, err := dbQuery(sql)
+func SelectTodo(id int64) (interface{}, error) {
+	sql := "SELECT * FROM todos WHERE id = ?"
+	results, err := dbQuery(sql, id)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -39,11 +40,11 @@ func SelectTodo(params t.ReqParams) (interface{}, error) {
 /*
 @Description 插入新的待办条目
 */
-func InsertTodo(params t.ReqParams) error {
+func InsertTodo(todo t.Todo) error {
+	log.Println("todo", todo)
 	createDate := u.GetMysqlNow()
-	params["createDate"] = createDate
-	sql := makeSql(`INSERT INTO todos (contant, description, createDate) VALUES ("${contant}", "${description}", "${createDate}")`, params)
-	_, err := dbExec(sql)
+	sql := "INSERT INTO todos (contant, description, done, createDate, lastUpdateDate) VALUES (?, ?, 0, ?, ?)"
+	_, err := dbExec(sql, todo.Contant, todo.Description, createDate, createDate)
 	if err != nil {
 		log.Fatal(err)
 		return nil
@@ -54,17 +55,12 @@ func InsertTodo(params t.ReqParams) error {
 /*
 @Description 更新指定ID对应的条目
 */
-func UpdateTodo(params t.ReqParams) error {
+func UpdateTodo(todo t.Todo) error {
+	sql := "UPDATE todos SET contant = ?, description = ?, done = ?, lastUpdateDate = ? WHERE id = ?"
 	lastUpdateDate := u.GetMysqlNow()
-	params["lastUpdateDate"] = lastUpdateDate
-	sql := makeSql(`UPDATE todos SET contant = "${contant}", description = "${description}", lastUpdateDate = "${lastUpdateDate}" WHERE id = ${id}`, params)
-	rows, err := dbExec(sql)
+	_, err := dbExec(sql, todo.Contant, todo.Description, todo.Done, lastUpdateDate, todo.Id)
 	if err != nil {
-		log.Fatal(err)
 		return err
-	}
-	if rows == 0 {
-		return errors.New("id不存在")
 	}
 	return nil
 }
@@ -72,9 +68,9 @@ func UpdateTodo(params t.ReqParams) error {
 /*
 @Description 删除指定ID的条目
 */
-func DeleteTodo(params t.ReqParams) error {
-	sql := makeSql(`DELETE FROM todos WHERE id = ${id}`, params)
-	rows, err := dbExec(sql)
+func DeleteTodo(id int64) error {
+	sql := "DELETE FROM todos WHERE id = ?"
+	rows, err := dbExec(sql, id)
 	if err != nil {
 		log.Fatal(err)
 		return err
