@@ -15,13 +15,38 @@ import (
 @Description 查询所有数据
 */
 func SelectTodos() (interface{}, error) {
-	const sql = "SELECT * FROM todos ORDER BY id"
+	const sql = "SELECT * FROM todos ORDER BY lastUpdateDate DESC"
 	results, err := dbQuery(sql)
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
 	return results, nil
+}
+
+func SelectTodosPage(currentPage int64, pageSize int64) (interface{}, error) {
+	const sql = "SELECT * FROM todos ORDER BY lastUpdateDate DESC LIMIT ?, ?"
+	start := (currentPage - 1) * pageSize
+	results, err := dbQuery(sql, start, pageSize)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	const countSql = "SELECT COUNT(*) as count FROM todos"
+	resultCount, errCount := dbQuery(countSql)
+	if errCount != nil {
+		log.Fatal(errCount)
+		return nil, errCount
+	}
+	count := resultCount[0]["count"]
+
+	finalResult := map[string]any{
+		"total": count,
+		"list":  results,
+	}
+
+	return finalResult, nil
 }
 
 /*
@@ -41,7 +66,6 @@ func SelectTodo(id int64) (interface{}, error) {
 @Description 插入新的待办条目
 */
 func InsertTodo(todo t.Todo) error {
-	log.Println("todo", todo)
 	createDate := u.GetMysqlNow()
 	sql := "INSERT INTO todos (contant, description, done, createDate, lastUpdateDate) VALUES (?, ?, 0, ?, ?)"
 	_, err := dbExec(sql, todo.Contant, todo.Description, createDate, createDate)

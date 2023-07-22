@@ -4,7 +4,6 @@
 package router
 
 import (
-	"fmt"
 	"strconv"
 	"xitulu/model"
 
@@ -19,8 +18,30 @@ import (
 func registerTodo(r *gin.Engine) {
 	// 返回所有数据
 	r.GET("/todo", func(ctx *gin.Context) {
-		data, err := model.SelectTodos()
-		responseData(ctx, err, data)
+		sCurrentPage := ctx.Query("currentPage")
+		sPageSize := ctx.Query("pageSize")
+
+		if sCurrentPage != "" && sPageSize != "" {
+			currentPage, errCrr := strconv.ParseInt(sCurrentPage, 10, 64)
+			if errCrr != nil {
+				response(ctx, errCrr)
+				return
+			}
+			pageSize, errSize := strconv.ParseInt(sPageSize, 10, 64)
+			if errSize != nil {
+				response(ctx, errSize)
+				return
+			}
+			data, errPage := model.SelectTodosPage(currentPage, pageSize)
+			if errPage != nil {
+				response(ctx, errPage)
+			} else {
+				responseData(ctx, errPage, data)
+			}
+		} else {
+			data, err := model.SelectTodos()
+			responseData(ctx, err, data)
+		}
 	})
 
 	// 返回指定ID的数据
@@ -42,7 +63,6 @@ func registerTodo(r *gin.Engine) {
 			response(ctx, errBind)
 			return
 		}
-		fmt.Println("todo", todo)
 		err := model.InsertTodo(todo)
 		response(ctx, err)
 	})

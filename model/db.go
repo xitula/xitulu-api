@@ -28,7 +28,7 @@ func SetupDb() {
 /*
 @Description 执行查询并返回数据
 */
-func dbQuery(sql string, params ...interface{}) (interface{}, error) {
+func dbQuery(sql string, params ...interface{}) ([]map[string]interface{}, error) {
 	trans, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
