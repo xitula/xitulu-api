@@ -5,6 +5,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	t "xitulu/types"
@@ -24,8 +25,17 @@ func SelectTodos() (interface{}, error) {
 	return results, nil
 }
 
-func SelectTodosPage(currentPage int64, pageSize int64) (interface{}, error) {
-	const sql = "SELECT * FROM todos ORDER BY lastUpdateDate DESC LIMIT ?, ?"
+func SelectTodosPage(currentPage int64, pageSize int64, orderBy string) (interface{}, error) {
+	var order string
+	switch orderBy {
+	case "create-desc":
+		order = "createDate"
+	case "update-desc":
+		order = "lastUpdateDate"
+	default:
+		order = "createDate"
+	}
+	sql := fmt.Sprintf("SELECT * FROM todos ORDER BY %s DESC LIMIT ?, ?", order)
 	start := (currentPage - 1) * pageSize
 	results, err := dbQuery(sql, start, pageSize)
 	if err != nil {

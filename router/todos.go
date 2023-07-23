@@ -20,6 +20,7 @@ func registerTodo(r *gin.Engine) {
 	r.GET("/todo", func(ctx *gin.Context) {
 		sCurrentPage := ctx.Query("currentPage")
 		sPageSize := ctx.Query("pageSize")
+		orderBy := ctx.Query("orderBy")
 
 		if sCurrentPage != "" && sPageSize != "" {
 			currentPage, errCrr := strconv.ParseInt(sCurrentPage, 10, 64)
@@ -32,7 +33,7 @@ func registerTodo(r *gin.Engine) {
 				response(ctx, errSize)
 				return
 			}
-			data, errPage := model.SelectTodosPage(currentPage, pageSize)
+			data, errPage := model.SelectTodosPage(currentPage, pageSize, orderBy)
 			if errPage != nil {
 				response(ctx, errPage)
 			} else {
