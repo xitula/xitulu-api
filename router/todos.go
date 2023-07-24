@@ -21,6 +21,7 @@ func registerTodo(r *gin.Engine) {
 		sCurrentPage := ctx.Query("currentPage")
 		sPageSize := ctx.Query("pageSize")
 		orderBy := ctx.Query("orderBy")
+		filterBy := ctx.Query("filterBy")
 
 		if sCurrentPage != "" && sPageSize != "" {
 			currentPage, errCrr := strconv.ParseInt(sCurrentPage, 10, 64)
@@ -33,7 +34,7 @@ func registerTodo(r *gin.Engine) {
 				response(ctx, errSize)
 				return
 			}
-			data, errPage := model.SelectTodosPage(currentPage, pageSize, orderBy)
+			data, errPage := model.SelectTodosPageByConditions(currentPage, pageSize, orderBy, filterBy)
 			if errPage != nil {
 				response(ctx, errPage)
 			} else {
