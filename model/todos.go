@@ -10,15 +10,14 @@ import (
 
 	t "xitulu/types"
 	u "xitulu/util"
+
+	"gorm.io/gorm/clause"
 )
 
 func SelectCount(table string, where string) (int64, error) {
-	log.Println("where", where)
 	var countSql string
 	if where != "" {
 		countSql = fmt.Sprintf("SELECT COUNT(*) as count FROM %s WHERE %s", table, where)
-		log.Println("countSql", countSql)
-		log.Println("countSql", countSql)
 	} else {
 		countSql = fmt.Sprintf("SELECT COUNT(*) as count FROM %s", table)
 	}
@@ -31,17 +30,23 @@ func SelectCount(table string, where string) (int64, error) {
 	return count.(int64), nil
 }
 
+// func SelectTodos() (interface{}, error) {
+// 	const sql = "SELECT * FROM todos ORDER BY lastUpdateDate DESC"
+// 	results, err := dbQuery(sql)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 		return nil, err
+// 	}
+// 	return results, nil
+// }
+
 /*
 @Description 查询所有数据
 */
-func SelectTodos() (interface{}, error) {
-	const sql = "SELECT * FROM todos ORDER BY lastUpdateDate DESC"
-	results, err := dbQuery(sql)
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-	return results, nil
+func SelectTodos() interface{} {
+	var todos []t.Todo
+	dbOrm.Table("todos").Find(&todos)
+	return todos
 }
 
 func SelectTodosPage(sql string, params ...interface{}) (interface{}, error) {
@@ -60,7 +65,7 @@ func SelectTodosPage(sql string, params ...interface{}) (interface{}, error) {
 	return finalResult, nil
 }
 
-func SelectTodosPageByConditions(currentPage int64, pageSize int64, orderBy string, filterBy string) (interface{}, error) {
+func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, filterBy string) (interface{}, error) {
 	var order string
 	switch orderBy {
 	case "create-desc":
@@ -80,30 +85,43 @@ func SelectTodosPageByConditions(currentPage int64, pageSize int64, orderBy stri
 		done = -1
 	}
 
-	var sql string
-	var results interface{}
-	var resErr error
+	var results []t.Todo
+	var count int64
+	// var resErr error
 	start := (currentPage - 1) * pageSize
 	if done == -1 {
-		sql = fmt.Sprintf("SELECT * FROM todos ORDER BY %s DESC LIMIT ?, ?", order)
-		results, resErr = dbQuery(sql, start, pageSize)
+		// sql = fmt.Sprintf("SELECT * FROM todos ORDER BY %s DESC LIMIT ?, ?", order)
+		// results, resErr = dbQuery(sql, start, pageSize)
+		dbOrm.
+			Table("todos").
+			Count(&count).
+			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
+			Offset(start).
+			Limit(pageSize).
+			Find(&results)
 	} else {
-		sql = fmt.Sprintf("SELECT * FROM todos WHERE done = %d ORDER BY %s DESC LIMIT ?, ?", done, order)
-
-		results, resErr = dbQuery(sql, start, pageSize)
+		// sql = fmt.Sprintf("SELECT * FROM todos WHERE done = %d ORDER BY %s DESC LIMIT ?, ?", done, order)
+		// results, resErr = dbQuery(sql, start, pageSize)
+		dbOrm.
+			Table("todos").
+			Where("done = ?", done).
+			Count(&count).
+			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
+			Offset(int(start)).
+			Limit(int(pageSize)).
+			Find(&results)
 	}
 
-	if resErr != nil {
-		log.Fatalln(resErr)
-		return nil, resErr
-	}
+	// if resErr != nil {
+	// 	log.Fatalln(resErr)
+	// 	return nil, resErr
+	// }
 
-	var count int64
-	if done == -1 {
-		count, _ = SelectCount("todos", "")
-	} else {
-		count, _ = SelectCount("todos", fmt.Sprintf("done = %d", done))
-	}
+	// if done == -1 {
+	// 	count, _ = SelectCount("todos", "")
+	// } else {
+	// 	count, _ = SelectCount("todos", fmt.Sprintf("done = %d", done))
+	// }
 
 	finalResult := map[string]any{
 		"total": count,

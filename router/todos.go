@@ -24,12 +24,12 @@ func registerTodo(r *gin.Engine) {
 		filterBy := ctx.Query("filterBy")
 
 		if sCurrentPage != "" && sPageSize != "" {
-			currentPage, errCrr := strconv.ParseInt(sCurrentPage, 10, 64)
+			currentPage, errCrr := strconv.Atoi(sCurrentPage)
 			if errCrr != nil {
 				response(ctx, errCrr)
 				return
 			}
-			pageSize, errSize := strconv.ParseInt(sPageSize, 10, 64)
+			pageSize, errSize := strconv.Atoi(sPageSize)
 			if errSize != nil {
 				response(ctx, errSize)
 				return
@@ -41,8 +41,8 @@ func registerTodo(r *gin.Engine) {
 				responseData(ctx, errPage, data)
 			}
 		} else {
-			data, err := model.SelectTodos()
-			responseData(ctx, err, data)
+			data := model.SelectTodos()
+			responseData(ctx, nil, data)
 		}
 	})
 
@@ -55,6 +55,12 @@ func registerTodo(r *gin.Engine) {
 		}
 		data, err := model.SelectTodo(id)
 		responseData(ctx, err, data)
+	})
+
+	// 返回指定ID的数据
+	r.GET("/todotest", func(ctx *gin.Context) {
+		data := model.SelectTodos()
+		responseData(ctx, nil, data)
 	})
 
 	// 新增

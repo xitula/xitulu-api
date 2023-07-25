@@ -8,10 +8,14 @@ import (
 	"log"
 	"strconv"
 
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
+var dbOrm *gorm.DB
 
 /*
 @Description 配置并初始化数据库
@@ -22,6 +26,15 @@ func SetupDb() {
 
 	if err != nil {
 		panic(err.Error)
+	}
+}
+
+func SetupDb2() {
+	dsn := "root:yl123456@tcp(localhost:3306)/xitulu"
+	var err error
+	dbOrm, err = gorm.Open(mysql.Open(dsn))
+	if err != nil {
+		log.Fatalln("err", err)
 	}
 }
 

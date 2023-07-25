@@ -17,7 +17,7 @@ type Res struct {
 
 // 代办事项
 type Todo struct {
-	Id             int    `json:"id"`                    // ID
+	Id             int    `json:"id" gorm:"primarykey"`  // ID
 	Contant        string `json:"contant"`               // 内容
 	Description    string `json:"description,omitempty"` // 描述，可选
 	CreateDate     string `json:"createDate"`            // 创建日期
