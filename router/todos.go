@@ -90,7 +90,7 @@ func registerTodo(r *gin.Engine) {
 	// 删除
 	r.DELETE("/todo/:id", func(ctx *gin.Context) {
 		sId := ctx.Params.ByName("id")
-		id, errId := strconv.ParseInt(sId, 10, 64)
+		id, errId := strconv.Atoi(sId)
 		if errId != nil {
 			response(ctx, errId)
 		}
