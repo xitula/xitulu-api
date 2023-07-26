@@ -110,7 +110,7 @@ func UpdateTodo(todo t.Todo) error {
 	result := dbOrm.
 		Table("todos").
 		Where("id = ?", todo.Id).
-		Updates(t.Todo{Contant: todo.Contant, Description: todo.Description, LastUpdateDate: lastUpdateDate})
+		Updates(t.Todo{Content: todo.Content, Description: todo.Description, Done: todo.Done, LastUpdateDate: lastUpdateDate})
 
 	err := result.Error
 	if err != nil {
