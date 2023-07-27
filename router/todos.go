@@ -48,7 +48,7 @@ func registerTodo(r *gin.Engine) {
 
 	// 返回指定ID的数据
 	r.GET("/todo/:id", func(ctx *gin.Context) {
-		sId := ctx.Params.ByName("id")
+		sId := ctx.Param("id")
 		id, errId := strconv.ParseInt(sId, 10, 64)
 		if errId != nil {
 			response(ctx, errId)
@@ -89,7 +89,7 @@ func registerTodo(r *gin.Engine) {
 
 	// 删除
 	r.DELETE("/todo/:id", func(ctx *gin.Context) {
-		sId := ctx.Params.ByName("id")
+		sId := ctx.Param("id")
 		id, errId := strconv.Atoi(sId)
 		if errId != nil {
 			response(ctx, errId)

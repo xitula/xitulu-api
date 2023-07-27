@@ -24,3 +24,40 @@ type Todo struct {
 	Done           int    `json:"done" gorm:"column:done"`                         // 是否已完成
 	LastUpdateDate string `json:"lastUpdateDate" gorm:"column:last_update_date"`   // 最后更新日期，可选
 }
+
+type UserBase struct {
+	Username string `json:"username" gorm:"column:username"`
+	Nickname string `json:"nickname" gorm:"column:nickname"`
+	Email    string `json:"email,omitempty" gorm:"column:email"`
+}
+
+type UserPassword struct {
+	Password string `json:"password" gorm:"column:password"`
+}
+
+type UserStatus struct {
+	CreateDate string `json:"createDate" gorm:"column:create_date"`
+	Status     int    `json:"status" gorm:"column:status"`
+}
+
+type UserRes struct {
+	Id int `json:"id" gorm:"column:id;primarykey"`
+	UserBase
+	UserStatus
+}
+
+type UserModel struct {
+	UserRes
+	UserPassword
+}
+
+type UserAdd struct {
+	UserBase
+	UserStatus
+	UserPassword
+}
+
+type UserLogin struct {
+	UserBase
+	UserPassword
+}
