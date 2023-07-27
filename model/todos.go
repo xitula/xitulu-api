@@ -18,7 +18,7 @@ import (
 */
 func SelectTodos() interface{} {
 	var todos []t.Todo
-	dbOrm.Table("todos").Find(&todos)
+	orm.Table("todos").Find(&todos)
 	return todos
 }
 
@@ -46,7 +46,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 	var count int64
 	start := (currentPage - 1) * pageSize
 	if done == -1 {
-		dbOrm.
+		orm.
 			Table("todos").
 			Count(&count).
 			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
@@ -54,7 +54,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 			Limit(pageSize).
 			Find(&results)
 	} else {
-		dbOrm.
+		orm.
 			Table("todos").
 			Where("done = ?", done).
 			Count(&count).
@@ -93,7 +93,7 @@ func InsertTodo(todo t.Todo) error {
 	todo.Done = 0
 	todo.CreateDate = createDate
 	todo.LastUpdateDate = createDate
-	result := dbOrm.Table("todos").Create(&todo)
+	result := orm.Table("todos").Create(&todo)
 	log.Println("todo", todo)
 	if result.Error != nil {
 		log.Fatal(result.Error)
@@ -107,10 +107,10 @@ func InsertTodo(todo t.Todo) error {
 */
 func UpdateTodo(todo t.Todo) error {
 	lastUpdateDate := u.GetMysqlNow()
-	result := dbOrm.
+	result := orm.
 		Table("todos").
 		Where("id = ?", todo.Id).
-		Updates(t.Todo{Content: todo.Content, Description: todo.Description, Done: todo.Done, LastUpdateDate: lastUpdateDate})
+		Updates(map[string]interface{}{"content": todo.Content, "description": todo.Description, "done": todo.Done, "last_update_date": lastUpdateDate})
 
 	err := result.Error
 	if err != nil {
@@ -124,7 +124,7 @@ func UpdateTodo(todo t.Todo) error {
 @Description 删除指定ID的条目
 */
 func DeleteTodo(id int) error {
-	result := dbOrm.Table("todos").Delete(&t.Todo{}, id)
+	result := orm.Table("todos").Delete(&t.Todo{}, id)
 
 	err := result.Error
 	if err != nil {

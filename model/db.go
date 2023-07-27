@@ -15,7 +15,7 @@ import (
 )
 
 var db *sql.DB
-var dbOrm *gorm.DB
+var orm *gorm.DB
 
 /*
 @Description 配置并初始化数据库
@@ -32,7 +32,7 @@ func SetupDb() {
 func SetupDb2() {
 	dsn := "root:yl123456@tcp(localhost:3306)/xitulu"
 	var err error
-	dbOrm, err = gorm.Open(mysql.Open(dsn))
+	orm, err = gorm.Open(mysql.Open(dsn))
 	if err != nil {
 		log.Fatalln("err", err)
 	}
