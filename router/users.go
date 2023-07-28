@@ -23,8 +23,8 @@ func RegisterUsers(r *gin.Engine) {
 			response(ctx, errBind)
 			return
 		}
-		err := model.InsertUser(&user)
-		response(ctx, err)
+		data, err := model.InsertUser(&user)
+		responseData(ctx, err, data)
 	})
 	r.PUT("/users", func(ctx *gin.Context) {
 		data, err := model.SelectUsersAll()

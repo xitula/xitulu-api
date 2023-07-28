@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	t "xitulu/types"
 	u "xitulu/util"
@@ -37,17 +38,31 @@ func SelectUserFirst(user *t.UserLogin) (*t.UserModel, error) {
 	return &dbUser, err
 }
 
-func InsertUser(user *t.UserAdd) error {
+func InsertUser(user *t.UserAdd) (*t.UserRes, error) {
+	var userM t.UserModel
+	userRes := t.UserRes{Id: 0, UserBase: t.UserBase{Username: user.Username, Nickname: user.Nickname, Email: user.Email}, UserStatus: t.UserStatus{Status: 1}}
+	check := orm.Table("users").Where("username = ?", user.Username).Take(&userM)
+	if check.Error == nil {
+		return &userRes, errors.New("用户名已存在")
+	}
+	fmt.Printf("%+v\n", userM)
+
 	createDate := u.GetMysqlNow()
 	user.CreateDate = createDate
 	user.Status = 1
-	result := orm.Table("users").Create(user)
+	result := orm.Table("users").Create(&user)
 	err := result.Error
 	if err != nil {
 		log.Fatalln("InsertUserError:", err)
-		return err
+		return &userRes, err
 	}
-	return nil
+	userRes.Id = user.Id
+	token, errT := UpdateUserUuid(user.Id, false)
+	if errT != nil {
+		return &userRes, errT
+	}
+	userRes.Token = token
+	return &userRes, nil
 }
 
 func UpdateUserUuid(id int, empty bool) (string, error) {

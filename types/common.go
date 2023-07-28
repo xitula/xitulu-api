@@ -27,7 +27,7 @@ type Todo struct {
 
 type UserBase struct {
 	Username string `json:"username" gorm:"column:username"`
-	Nickname string `json:"nickname" gorm:"column:nickname"`
+	Nickname string `json:"nickname,omitempty" gorm:"column:nickname"`
 	Email    string `json:"email,omitempty" gorm:"column:email"`
 }
 
@@ -44,6 +44,7 @@ type UserRes struct {
 	Id int `json:"id" gorm:"column:id;primarykey"`
 	UserBase
 	UserStatus
+	Token string `json:"token,omitempty" gorm:"column:token"`
 }
 
 type UserModel struct {
@@ -52,6 +53,7 @@ type UserModel struct {
 }
 
 type UserAdd struct {
+	Id int `json:"id,omitempty" gorm:"column:id;primarykey"`
 	UserBase
 	UserStatus
 	UserPassword
