@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func SelectUsersAll() (map[string]any, error) {
+func SelectUsersAll() (*map[string]any, error) {
 	var users []t.UserRes
 	var count int64
 	result := orm.Table("users").Find(&users).Count(&count)
@@ -23,21 +23,21 @@ func SelectUsersAll() (map[string]any, error) {
 		"list":  users,
 		"count": count,
 	}
-	return finalResult, nil
+	return &finalResult, nil
 }
 
-func SelectUserFirst(user t.UserLogin) (t.UserModel, error) {
+func SelectUserFirst(user *t.UserLogin) (*t.UserModel, error) {
 	var dbUser t.UserModel
 	result := orm.Table("users").Where("username = ? AND status = 1", user.Username).First(&dbUser)
 	err := result.Error
 	if err != nil {
 		log.Fatalln("SelectUserFirstError:", err)
-		return dbUser, err
+		return &dbUser, err
 	}
-	return dbUser, err
+	return &dbUser, err
 }
 
-func InsertUser(user t.UserAdd) error {
+func InsertUser(user *t.UserAdd) error {
 	createDate := u.GetMysqlNow()
 	user.CreateDate = createDate
 	user.Status = 1

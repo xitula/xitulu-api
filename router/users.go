@@ -23,7 +23,7 @@ func RegisterUsers(r *gin.Engine) {
 			response(ctx, errBind)
 			return
 		}
-		err := model.InsertUser(user)
+		err := model.InsertUser(&user)
 		response(ctx, err)
 	})
 	r.PUT("/users", func(ctx *gin.Context) {
@@ -44,7 +44,7 @@ func RegisterUsers(r *gin.Engine) {
 			return
 		}
 
-		dbUser, err := model.SelectUserFirst(user)
+		dbUser, err := model.SelectUserFirst(&user)
 
 		if user.Password != dbUser.Password {
 			response(ctx, errors.New("用户名或密码错误"))

@@ -71,7 +71,7 @@ func registerTodo(r *gin.Engine) {
 			response(ctx, errBind)
 			return
 		}
-		err := model.InsertTodo(todo)
+		err := model.InsertTodo(&todo)
 		response(ctx, err)
 	})
 
@@ -83,7 +83,7 @@ func registerTodo(r *gin.Engine) {
 			response(ctx, errBind)
 			return
 		}
-		err := model.UpdateTodo(todo)
+		err := model.UpdateTodo(&todo)
 		response(ctx, err)
 	})
 

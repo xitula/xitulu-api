@@ -19,7 +19,7 @@ import (
 func SelectTodos() interface{} {
 	var todos []t.Todo
 	orm.Table("todos").Find(&todos)
-	return todos
+	return &todos
 }
 
 func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, filterBy string) (interface{}, error) {
@@ -69,7 +69,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 		"list":  results,
 	}
 
-	return finalResult, nil
+	return &finalResult, nil
 }
 
 /*
@@ -82,13 +82,13 @@ func SelectTodo(id int64) (interface{}, error) {
 		log.Fatal(err)
 		return nil, err
 	}
-	return results, nil
+	return &results, nil
 }
 
 /*
 @Description 插入新的待办条目
 */
-func InsertTodo(todo t.Todo) error {
+func InsertTodo(todo *t.Todo) error {
 	createDate := u.GetMysqlNow()
 	todo.Done = 0
 	todo.CreateDate = createDate
@@ -105,7 +105,7 @@ func InsertTodo(todo t.Todo) error {
 /*
 @Description 更新指定ID对应的条目
 */
-func UpdateTodo(todo t.Todo) error {
+func UpdateTodo(todo *t.Todo) error {
 	lastUpdateDate := u.GetMysqlNow()
 	result := orm.
 		Table("todos").

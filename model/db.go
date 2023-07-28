@@ -21,15 +21,6 @@ var orm *gorm.DB
 @Description 配置并初始化数据库
 */
 func SetupDb() {
-	var err error
-	db, err = sql.Open("mysql", "root:yl123456@tcp(localhost:3306)/xitulu")
-
-	if err != nil {
-		panic(err.Error)
-	}
-}
-
-func SetupDb2() {
 	dsn := "root:yl123456@tcp(localhost:3306)/xitulu"
 	var err error
 	orm, err = gorm.Open(mysql.Open(dsn))
