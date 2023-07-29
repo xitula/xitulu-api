@@ -17,12 +17,13 @@ type Res struct {
 
 // 代办事项
 type Todo struct {
-	Id             int    `json:"id" gorm:"column:id;primarykey"`                  // ID
-	Content        string `json:"content" gorm:"column:content"`                   // 内容
-	Description    string `json:"description,omitempty" gorm:"column:description"` // 描述，可选
-	CreateDate     string `json:"createDate" gorm:"column:create_date"`            // 创建日期
-	Done           int    `json:"done" gorm:"column:done"`                         // 是否已完成
-	LastUpdateDate string `json:"lastUpdateDate" gorm:"column:last_update_date"`   // 最后更新日期，可选
+	Id             int    `json:"id" gorm:"column:id;primarykey"`                          // ID
+	Uid            int    `json:"uid" gorm:"column:uid"`                                   // 用户ID
+	Content        string `json:"content" gorm:"column:content"`                           // 内容
+	Description    string `json:"description,omitempty" gorm:"column:description"`         // 描述，可选
+	CreateDate     string `json:"createDate,omitempty" gorm:"column:create_date"`          // 创建日期
+	Done           int    `json:"done,omitempty" gorm:"column:done"`                       // 是否已完成
+	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"` // 最后更新日期，可选
 }
 
 type UserBase struct {
