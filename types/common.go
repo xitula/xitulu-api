@@ -15,6 +15,23 @@ type Res struct {
 	Data    interface{} `json:"data,omitempty"` // 返回数据，可选
 }
 
+type DataTotal struct {
+	List  []interface{} `json:"list"`
+	Count int64         `json:"count"`
+}
+
+// type ResPage struct {
+// 	Res
+// 	Data DataTotal
+// }
+
+type Pagination struct {
+	CurrentPage int    `json:"currentPage"`
+	PageSize    int    `json:"pageSize"`
+	OrderBy     string `json:"orderBy,omitempty"`
+	FilterBy    string `json:"filterBy,omitempty"`
+}
+
 // 代办事项
 type Todo struct {
 	Id             int    `json:"id" gorm:"column:id;primarykey"`                          // ID
@@ -26,41 +43,11 @@ type Todo struct {
 	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"` // 最后更新日期，可选
 }
 
-type UserBase struct {
-	Username string `json:"username" gorm:"column:username"`
-	Nickname string `json:"nickname,omitempty" gorm:"column:nickname"`
-	Email    string `json:"email,omitempty" gorm:"column:email"`
-}
-
-type UserPassword struct {
-	Password string `json:"password" gorm:"column:password"`
-}
-
-type UserStatus struct {
-	CreateDate string `json:"createDate" gorm:"column:create_date"`
-	Status     int    `json:"status" gorm:"column:status"`
-}
-
-type UserRes struct {
-	Id int `json:"id" gorm:"column:id;primarykey"`
-	UserBase
-	UserStatus
-	Token string `json:"token,omitempty" gorm:"column:token"`
-}
-
-type UserModel struct {
-	UserRes
-	UserPassword
-}
-
-type UserAdd struct {
-	Id int `json:"id,omitempty" gorm:"column:id;primarykey"`
-	UserBase
-	UserStatus
-	UserPassword
-}
-
-type UserLogin struct {
-	UserBase
-	UserPassword
+// 随感
+type Causerie struct {
+	Id         int    `json:"id,omitempty" gorm:"column:id;primarykey"`
+	Uid        int    `json:"uid" gorm:"column:uid"`
+	Content    string `json:"content" gorm:"column:content"`
+	Status     int    `json:"status,omitempty" gorm:"column:status"`
+	CreateDate string `json:"createDate,omitempty" gorm:"column:create_date"`
 }

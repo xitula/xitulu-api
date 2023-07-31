@@ -63,7 +63,8 @@ func SetupRouter() *gin.Engine {
 	})
 
 	registerTodo(r)
-	RegisterUsers(r)
+	registerUsers(r)
+	registerCauseries(r)
 
 	// Authorized group (uses gin.BasicAuth() middleware)
 	// Same than:

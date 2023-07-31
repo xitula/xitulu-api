@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUsers(r *gin.Engine) {
+func registerUsers(r *gin.Engine) {
 	r.GET("/users", func(ctx *gin.Context) {
 		data, err := model.SelectUsersAll()
 		responseData(ctx, err, data)
