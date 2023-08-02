@@ -32,4 +32,21 @@ func registerCauseries(r *gin.Engine) {
 		errInsert := model.InsertCauserie(&causerie)
 		response(c, errInsert)
 	})
+
+	r.PUT("/causeries", func(c *gin.Context) {
+		var causerie t.Causerie
+		errBind := c.ShouldBindJSON(&causerie)
+		if errBind != nil {
+			response(c, errBind)
+		}
+		errUpdate := model.UpdateCauserie(causerie.Id, causerie.Content)
+		response(c, errUpdate)
+	})
+
+	r.DELETE("/causeries/:id", func(c *gin.Context) {
+		sId := c.Param("id")
+		id, _ := strconv.Atoi(sId)
+		errUpdate := model.DeleteCauserie(id)
+		response(c, errUpdate)
+	})
 }

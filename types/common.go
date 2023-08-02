@@ -45,9 +45,10 @@ type Todo struct {
 
 // 随感
 type Causerie struct {
-	Id         int    `json:"id,omitempty" gorm:"column:id;primarykey"`
-	Uid        int    `json:"uid" gorm:"column:uid"`
-	Content    string `json:"content" gorm:"column:content"`
-	Status     int    `json:"status,omitempty" gorm:"column:status"`
-	CreateDate string `json:"createDate,omitempty" gorm:"column:create_date"`
+	Id             int    `json:"id,omitempty" gorm:"column:id;primarykey"`
+	Uid            int    `json:"uid,omitempty" gorm:"column:uid"`
+	Content        string `json:"content,omitempty" gorm:"column:content"`
+	Status         int    `json:"status,omitempty" gorm:"column:status"`
+	CreateDate     string `json:"createDate,omitempty" gorm:"column:create_date"`
+	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"`
 }
