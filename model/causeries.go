@@ -9,8 +9,7 @@ import (
 
 func SelectCauseriesAll() (*[]t.Causerie, error) {
 	var causeries []t.Causerie
-	var count int64
-	result := orm.Table("causeries").Where("status = 1").Order("create_date DESC").Find(&causeries).Count(&count)
+	result := orm.Table("causeries").Where("status = 1").Order("create_date DESC").Find(&causeries)
 	err := result.Error
 	if err != nil {
 		log.Fatalln("SelectCauseriesAllError:", err)

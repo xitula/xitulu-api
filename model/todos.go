@@ -18,7 +18,7 @@ import (
 */
 func SelectTodos() interface{} {
 	var todos []t.Todo
-	orm.Table("todos").Find(&todos)
+	orm.Table("todos").Where("status = 1").Find(&todos)
 	return &todos
 }
 
@@ -48,6 +48,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 	if done == -1 {
 		orm.
 			Table("todos").
+			Where("status = 1").
 			Count(&count).
 			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
 			Offset(start).
@@ -56,7 +57,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 	} else {
 		orm.
 			Table("todos").
-			Where("done = ?", done).
+			Where("done = ? AND status = 1", done).
 			Count(&count).
 			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
 			Offset(int(start)).
@@ -76,7 +77,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 @Description 查询指定ID的条目
 */
 func SelectTodo(id int64) (interface{}, error) {
-	sql := "SELECT * FROM todos WHERE id = ?"
+	sql := "SELECT * FROM todos WHERE id = ? AND status = 1"
 	results, err := dbQuery(sql, id)
 	if err != nil {
 		log.Fatal(err)
@@ -124,7 +125,8 @@ func UpdateTodo(todo *t.Todo) error {
 @Description 删除指定ID的条目
 */
 func DeleteTodo(id int) error {
-	result := orm.Table("todos").Delete(&t.Todo{}, id)
+	lastUpdateDate := u.GetMysqlNow()
+	result := orm.Table("todos").Where("id = ?", id).Updates(map[string]interface{}{"status": 0, "last_update_date": lastUpdateDate})
 
 	err := result.Error
 	if err != nil {
