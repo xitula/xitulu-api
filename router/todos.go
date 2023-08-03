@@ -57,12 +57,6 @@ func registerTodo(r *gin.Engine) {
 		responseData(ctx, err, data)
 	})
 
-	// 返回指定ID的数据
-	r.GET("/todotest", func(ctx *gin.Context) {
-		data := model.SelectTodos()
-		responseData(ctx, nil, data)
-	})
-
 	// 新增
 	r.POST("/todo", func(ctx *gin.Context) {
 		todo := t.Todo{}

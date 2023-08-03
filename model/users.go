@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// 查询所有用户数据
 func SelectUsersAll() (*map[string]any, error) {
 	var users []t.UserRes
 	var count int64
@@ -27,6 +28,7 @@ func SelectUsersAll() (*map[string]any, error) {
 	return &finalResult, nil
 }
 
+// 根据用户名查询用户
 func SelectUserFirst(user *t.UserLogin) (*t.UserModel, error) {
 	var dbUser t.UserModel
 	result := orm.Table("users").Where("username = ? AND status = 1", user.Username).First(&dbUser)
@@ -38,6 +40,7 @@ func SelectUserFirst(user *t.UserLogin) (*t.UserModel, error) {
 	return &dbUser, err
 }
 
+// 新增用户
 func InsertUser(user *t.UserAdd) (*t.UserRes, error) {
 	var userM t.UserModel
 	userRes := t.UserRes{Id: 0, UserBase: t.UserBase{Username: user.Username, Nickname: user.Nickname, Email: user.Email}, UserStatus: t.UserStatus{Status: 1}}
@@ -65,10 +68,24 @@ func InsertUser(user *t.UserAdd) (*t.UserRes, error) {
 	return &userRes, nil
 }
 
+// 更新用户
+func UpdateUser(user *t.UserModel) error {
+	// TODO
+	return nil
+}
+
+// 删除用户数据
+func DeleteUser(id int) error {
+	// TODO
+	return nil
+}
+
+// 生成并更新用户token
 func UpdateUserUuid(id int, empty bool) (string, error) {
 	if !empty {
 		uuids := uuid.New()
 		str := uuids.String()
+		// TODO 事务&token碰撞检查
 		orm.Table("users").Where("id = ?", id).Update("token", str)
 		return str, nil
 	} else {

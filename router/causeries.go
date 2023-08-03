@@ -10,6 +10,7 @@ import (
 )
 
 func registerCauseries(r *gin.Engine) {
+	// 查询所有随感数据
 	r.GET("/causeries", func(c *gin.Context) {
 		var page t.Pagination
 		page.CurrentPage, _ = strconv.Atoi(c.Query("currentPage"))
@@ -23,6 +24,7 @@ func registerCauseries(r *gin.Engine) {
 		}
 	})
 
+	// 新增随感
 	r.POST("/causeries", func(c *gin.Context) {
 		var causerie t.Causerie
 		errBind := c.ShouldBindJSON(&causerie)
@@ -33,6 +35,7 @@ func registerCauseries(r *gin.Engine) {
 		response(c, errInsert)
 	})
 
+	// 更新随感
 	r.PUT("/causeries", func(c *gin.Context) {
 		var causerie t.Causerie
 		errBind := c.ShouldBindJSON(&causerie)
@@ -43,6 +46,7 @@ func registerCauseries(r *gin.Engine) {
 		response(c, errUpdate)
 	})
 
+	// 依据ID删除随感
 	r.DELETE("/causeries/:id", func(c *gin.Context) {
 		sId := c.Param("id")
 		id, _ := strconv.Atoi(sId)

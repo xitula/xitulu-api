@@ -13,16 +13,16 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-/*
-@Description 查询所有数据
-*/
+// 查询所有数据
 func SelectTodos() interface{} {
 	var todos []t.Todo
 	orm.Table("todos").Where("status = 1").Find(&todos)
 	return &todos
 }
 
+// 依据条件分页查询待办列表
 func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, filterBy string) (interface{}, error) {
+	// 排序条件
 	var order string
 	switch orderBy {
 	case "create-desc":
@@ -32,6 +32,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 	default:
 		order = "create_date"
 	}
+	// 是否已完成
 	var done int8
 	switch filterBy {
 	case "tobe":
@@ -73,9 +74,7 @@ func SelectTodosPageByConditions(currentPage int, pageSize int, orderBy string, 
 	return &finalResult, nil
 }
 
-/*
-@Description 查询指定ID的条目
-*/
+// 查询指定ID的条目
 func SelectTodo(id int64) (interface{}, error) {
 	sql := "SELECT * FROM todos WHERE id = ? AND status = 1"
 	results, err := dbQuery(sql, id)
@@ -86,9 +85,7 @@ func SelectTodo(id int64) (interface{}, error) {
 	return &results, nil
 }
 
-/*
-@Description 插入新的待办条目
-*/
+// 插入新的待办条目
 func InsertTodo(todo *t.Todo) error {
 	createDate := u.GetMysqlNow()
 	todo.Done = 0
@@ -103,9 +100,7 @@ func InsertTodo(todo *t.Todo) error {
 	return nil
 }
 
-/*
-@Description 更新指定ID对应的条目
-*/
+// 更新指定ID对应的条目
 func UpdateTodo(todo *t.Todo) error {
 	lastUpdateDate := u.GetMysqlNow()
 	result := orm.
@@ -121,9 +116,7 @@ func UpdateTodo(todo *t.Todo) error {
 	return nil
 }
 
-/*
-@Description 删除指定ID的条目
-*/
+// 删除指定ID的条目
 func DeleteTodo(id int) error {
 	lastUpdateDate := u.GetMysqlNow()
 	result := orm.Table("todos").Where("id = ?", id).Updates(map[string]interface{}{"status": 0, "last_update_date": lastUpdateDate})
