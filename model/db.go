@@ -10,8 +10,6 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB

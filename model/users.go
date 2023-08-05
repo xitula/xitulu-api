@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	t "xitulu/types"
-	u "xitulu/util"
+	u "xitulu/utils"
 
 	"github.com/google/uuid"
 )

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 	t "xitulu/types"
-	u "xitulu/util"
+	u "xitulu/utils"
 )
 
 // 查询所有随感数据
