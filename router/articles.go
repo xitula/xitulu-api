@@ -1,22 +1,31 @@
 package router
 
 import (
-	"xitulu/services"
-
 	"github.com/gin-gonic/gin"
+	"xitulu/models"
+	"xitulu/router/handler"
 )
 
+// 新增文章
 func addArticle(c *gin.Context) {
-	var article services.Article
+	var article models.Article
 	if errBind := c.ShouldBindJSON(&article); errBind != nil {
 		response(c, errBind)
 	}
-	errS := services.Add(&article)
+	errS := handler.ArticleAdd(&article)
 	response(c, errS)
 }
 
-func getArticle(c *gin.Context)    {}
-func getArticles(c *gin.Context)   {}
+func getArticle(c *gin.Context) {}
+
+// 获取所有文章
+func getArticles(c *gin.Context) {
+	if data, err := handler.ArticleGetAll(); err != nil {
+		responseData(c, err, nil)
+	} else {
+		responseData(c, nil, data)
+	}
+}
 func updateArticle(c *gin.Context) {}
 func deleteArticle(c *gin.Context) {}
 

@@ -1,28 +1,40 @@
 package models
 
+// 文章模型
 type Article struct {
-	Id          int    `json:"id"`
-	Uid         int    `json:"uid"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Content     string `json:"content"`
-	State       int    `json:"state"`
-	CreatedOn   string `json:"createdOn"`
-	ModifiedOn  string `json:"modifiedOn"`
+	// 文章ID
+	Id int `json:"id" gorm:"primary"`
+	// 创建人ID
+	Uid int `json:"uid"`
+	// 标题
+	Title string `json:"title"`
+	// 描述
+	Description *string `json:"description"`
+	// 内容
+	Content string `json:"content"`
+	// 状态 0=删除 1=正常
+	State int `json:"state"`
+	// 创建时间
+	CreatedOn string `json:"createdOn,omitempty"`
+	// 修改时间
+	ModifiedOn *string `json:"modifiedOn,omitempty"`
 }
 
-func (a *Article) InsertArticle(data *map[string]interface{}) error {
-	//article := Article{
-	//	Uid:         data["uid"].(int),
-	//	Title:       data["title"].(string),
-	//	Description: data["description"].(string),
-	//	Content:     data["content"].(string),
-	//	State:       data["state"].(int),
-	//	CreatedOn:   data["createOn"].(string),
-	//}
-	if err := db.Create(&article).Error; err != nil {
+// 插入文章
+func InsertArticle(data *Article) error {
+	if err := db.Create(data).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// 查询所有文章
+func SelectAll() (*[]Article, int64, error) {
+	var articles *[]Article
+	var count int64
+	if err := db.Table("articles").Find(&articles).Count(&count).Error; err != nil {
+		return nil, 0, err
+	}
+	return articles, count, nil
 }
