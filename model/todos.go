@@ -91,6 +91,7 @@ func InsertTodo(todo *t.Todo) error {
 	todo.Done = 0
 	todo.CreateDate = createDate
 	todo.LastUpdateDate = createDate
+	todo.Status = 1
 	result := orm.Table("todos").Create(&todo)
 
 	if result.Error != nil {

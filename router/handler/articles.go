@@ -22,8 +22,8 @@ func ArticleAdd(c *gin.Context) {
 	article.State = 1
 	article.CreatedOn = utils.GetMysqlNow()
 
-	err := article.Insert(&article)
-	response(c, err)
+	id, err := article.Insert(&article)
+	responseData(c, err, map[string]int{"id": id})
 }
 
 // 获取所有文章
@@ -39,12 +39,12 @@ func Articles(c *gin.Context) {
 // 更新文章
 func ArticleUpdate(c *gin.Context) {
 	var article models.Article
-	modifiedOn := utils.GetMysqlNow()
 	errBind := c.ShouldBindJSON(&article)
-	article.ModifiedOn = &modifiedOn
 	if errBind != nil {
 		response(c, errBind)
 	} else {
+		modifiedOn := utils.GetMysqlNow()
+		article.ModifiedOn = &modifiedOn
 		err := article.Update(&article)
 		response(c, err)
 	}

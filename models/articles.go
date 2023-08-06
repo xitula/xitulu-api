@@ -26,19 +26,19 @@ type Article struct {
 }
 
 // 插入文章
-func (a *Article) Insert(data *Article) error {
+func (a *Article) Insert(data *Article) (int, error) {
 	if err := db.Create(data).Error; err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return data.Id, nil
 }
 
 // 查询所有文章
 func (a *Article) SelectAll() (*[]Article, int64, error) {
 	var articles *[]Article
 	var count int64
-	if err := db.Table("articles").Where("state = 1").Find(&articles).Count(&count).Error; err != nil {
+	if err := db.Table("articles").Where("state = 1").Order("created_on DESC").Find(&articles).Count(&count).Error; err != nil {
 		return nil, 0, err
 	}
 	return articles, count, nil
@@ -49,6 +49,7 @@ func (a *Article) Update(article *Article) error {
 	result := db.
 		Table("articles").
 		Model(&article).
+		Where("id = ?", article.Id).
 		Select("Title", "Description", "Content", "ModifiedOn").
 		Updates(&article)
 	if result.Error != nil {
