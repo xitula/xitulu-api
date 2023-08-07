@@ -5,6 +5,7 @@ package router
 
 import (
 	"net/http"
+	"xitulu/router/handler"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -66,6 +67,11 @@ func SetupRouter() *gin.Engine {
 	registerUsers(r)
 	registerCauseries(r)
 	registerArticles(r)
+
+	// 设置静态上传的文件目录
+	r.Static("/uploaded", "../uploaded")
+	r.MaxMultipartMemory = 1 << 20 // 1MB
+	r.POST("/upload/avatar", handler.Upload)
 
 	// Authorized group (uses gin.BasicAuth() middleware)
 	// Same than:
