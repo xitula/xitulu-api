@@ -6,8 +6,7 @@ package router
 import (
 	"strconv"
 	"xitulu/model"
-
-	t "xitulu/types"
+	"xitulu/router/handler"
 
 	"github.com/gin-gonic/gin"
 )
@@ -58,28 +57,9 @@ func registerTodo(r *gin.Engine) {
 	})
 
 	// 新增
-	r.POST("/todo", func(ctx *gin.Context) {
-		todo := t.Todo{}
-		errBind := ctx.BindJSON(&todo)
-		if errBind != nil {
-			response(ctx, errBind)
-			return
-		}
-		err := model.InsertTodo(&todo)
-		response(ctx, err)
-	})
-
+	r.POST("/todo", handler.TodoAdd)
 	// 更新
-	r.PUT("/todo", func(ctx *gin.Context) {
-		todo := t.Todo{}
-		errBind := ctx.BindJSON(&todo)
-		if errBind != nil {
-			response(ctx, errBind)
-			return
-		}
-		err := model.UpdateTodo(&todo)
-		response(ctx, err)
-	})
+	r.PUT("/todo", handler.TodoUpdate)
 
 	// 删除
 	r.DELETE("/todo/:id", func(ctx *gin.Context) {
