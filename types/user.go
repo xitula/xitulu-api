@@ -16,7 +16,7 @@ type UserStatus struct {
 }
 
 type UserRes struct {
-	Id int `json:"id" gorm:"column:id;primarykey"`
+	Id int `json:"id" gorm:"column:id;primary"`
 	UserBase
 	UserStatus
 	Token string `json:"token,omitempty" gorm:"column:token"`
@@ -28,7 +28,7 @@ type UserModel struct {
 }
 
 type UserAdd struct {
-	Id int `json:"id,omitempty" gorm:"column:id;primarykey"`
+	Id int `json:"id,omitempty" gorm:"column:id;primary"`
 	UserBase
 	UserStatus
 	UserPassword
