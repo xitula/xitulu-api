@@ -1,45 +1,16 @@
-/*
-@Description 路由包，路由的配置项与公共函数等
-*/
+// Package router 路由包，路由的配置项与公共函数等
 package router
 
 import (
-	"net/http"
-	"xitulu/router/handler"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
-	t "xitulu/types"
+	"net/http"
+	"xitulu/router/handler"
 )
 
 var db = make(map[string]string)
 
-/*
-@Description 默认接口返回
-*/
-func response(c *gin.Context, err error) {
-	if err != nil {
-		c.JSON(http.StatusOK, t.Res{Code: 1, Message: err.Error()})
-	} else {
-		c.JSON(http.StatusOK, t.Res{Code: 0, Message: "ok"})
-	}
-}
-
-/*
-@Description 带数据的默认接口返回
-*/
-func responseData(c *gin.Context, err error, data interface{}) {
-	if err != nil {
-		c.JSON(http.StatusOK, t.Res{Code: 1, Message: err.Error(), Data: err})
-	} else {
-		c.JSON(http.StatusOK, t.Res{Code: 0, Message: "ok", Data: data})
-	}
-}
-
-/*
-@Description 设置Gin路由
-*/
+// SetupRouter 配置路由规则
 func SetupRouter() *gin.Engine {
 	// Disable Console Color
 	// gin.DisableConsoleColor()
@@ -63,10 +34,52 @@ func SetupRouter() *gin.Engine {
 		}
 	})
 
-	registerTodo(r)
-	registerUsers(r)
-	registerCauseries(r)
-	registerArticles(r)
+	// 用户相关
+	// 获取所有用户
+	r.GET("/users", handler.UserGetAll)
+	// 新增用户
+	r.POST("/users", handler.UserAdd)
+	// 更新用户数据
+	r.PUT("/users", handler.UserUpdate)
+	// 删除用户
+	r.DELETE("/users/:id", handler.UserDelete)
+	// 用户登录
+	r.POST("/users/login", handler.UserLogin)
+	// 用户登出
+	r.GET("/users/logout", handler.UserLogout)
+
+	// 待办相关
+	// 返回所有数据
+	r.GET("/todo", handler.TodoGet)
+	// 返回指定ID的数据
+	r.GET("/todo/:id", handler.TodoGetOne)
+	// 新增
+	r.POST("/todo", handler.TodoAdd)
+	// 更新
+	r.PUT("/todo", handler.TodoUpdate)
+	// 删除
+	r.DELETE("/todo/:id", handler.TodoDelete)
+
+	// 随感相关
+	// 查询所有随感数据
+	r.GET("/causeries", handler.CauseriesAll)
+	// 新增随感
+	r.POST("/causeries", handler.CauseriesAdd)
+	// 更新随感
+	r.PUT("/causeries", handler.CauseriesUpdate)
+	// 依据ID删除随感
+	r.DELETE("/causeries/:id", handler.CauseriesDelete)
+
+	// 文章相关
+	// 新增文章
+	r.POST("/articles", handler.ArticleAdd)
+	//r.GET("/articles/:id", getArticle)
+	// 获取所有文章
+	r.GET("/articles", handler.Articles)
+	// 更新文章
+	r.PUT("/articles", handler.ArticleUpdate)
+	// 删除文章
+	r.DELETE("/articles/:id", handler.ArticleDelete)
 
 	// 设置静态上传的文件目录
 	r.Static("/uploaded", "../uploaded")

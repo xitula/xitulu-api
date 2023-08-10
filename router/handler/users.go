@@ -69,6 +69,8 @@ func UserLogin(ctx *gin.Context) {
 	}
 
 	if data.Password != dbUser.Password {
+		// TODO 输入错误7次锁定24小时
+		// TODO 每3个月提示改密码
 		response(ctx, errors.New("用户名或密码错误"))
 		_, err := modelUser.UpdateUserUuid(dbUser.Id, true)
 		if err != nil {
