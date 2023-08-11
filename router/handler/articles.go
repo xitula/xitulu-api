@@ -18,6 +18,11 @@ func ArticleAdd(c *gin.Context) {
 	var article models.Article
 	if errBind := c.ShouldBindJSON(&article); errBind != nil {
 		response(c, errBind)
+		return
+	}
+	if errs := validate.Struct(&article); errs != nil {
+		response(c, errs)
+		return
 	}
 	article.State = 1
 	article.CreatedOn = utils.GetMysqlNow()
@@ -42,16 +47,21 @@ func ArticleUpdate(c *gin.Context) {
 	errBind := c.ShouldBindJSON(&article)
 	if errBind != nil {
 		response(c, errBind)
-	} else {
-		modifiedOn := utils.GetMysqlNow()
-		article.ModifiedOn = &modifiedOn
-		err := article.Update(&article)
-		response(c, err)
+		return
 	}
+	if errs := validate.Struct(&article); errs != nil {
+		response(c, errs)
+		return
+	}
+	modifiedOn := utils.GetMysqlNow()
+	article.ModifiedOn = &modifiedOn
+	err := article.Update(&article)
+	response(c, err)
 }
 
 // 删除文章
 func ArticleDelete(c *gin.Context) {
+	// TODO 越权
 	sId := c.Param("id")
 	id, _ := strconv.Atoi(sId)
 	err := article.Delete(id)

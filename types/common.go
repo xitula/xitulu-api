@@ -32,24 +32,31 @@ type Pagination struct {
 	FilterBy    string `json:"filterBy,omitempty"`
 }
 
-// 代办事项
-type Todo struct {
-	Id             int    `json:"id" gorm:"column:id;primary"`                             // ID
-	Uid            int    `json:"uid" gorm:"column:uid"`                                   // 用户ID
-	Content        string `json:"content" gorm:"column:content"`                           // 内容
-	Description    string `json:"description,omitempty" gorm:"column:description"`         // 描述，可选
-	CreateDate     string `json:"createDate,omitempty" gorm:"column:create_date"`          // 创建日期
-	Done           int    `json:"done,omitempty" gorm:"column:done"`                       // 是否已完成
-	Status         int    `json:"status,omitempty" gorm:"column:status"`                   // 条目状态
-	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"` // 最后更新日期，可选
+type GetAllParam struct {
+	CurrentPage int    `form:"currentPage" validate:"gt=0"`
+	PageSize    int    `form:"pageSize" validate:"required_with=CurrentPage,gt=0"`
+	OrderBy     string `form:"orderBy" validate:"oneof=create-desc update-desc"`
+	FilterBy    string `form:"filterBy" validate:"oneof=tobe done"`
 }
 
+// 代办事项
+//type Todo struct {
+//	Id             int    `json:"id" gorm:"column:id;primary"`                             // ID
+//	Uid            int    `json:"uid" gorm:"column:uid"`                                   // 用户ID
+//	Content        string `json:"content" gorm:"column:content"`                           // 内容
+//	Description    string `json:"description,omitempty" gorm:"column:description"`         // 描述，可选
+//	CreateDate     string `json:"createDate,omitempty" gorm:"column:create_date"`          // 创建日期
+//	Done           int    `json:"done,omitempty" gorm:"column:done"`                       // 是否已完成
+//	Status         int    `json:"status,omitempty" gorm:"column:status"`                   // 条目状态
+//	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"` // 最后更新日期，可选
+//}
+
 // 随感
-type Causerie struct {
-	Id             int    `json:"id,omitempty" gorm:"column:id;primarykey"`
-	Uid            int    `json:"uid,omitempty" gorm:"column:uid"`
-	Content        string `json:"content,omitempty" gorm:"column:content"`
-	Status         int    `json:"status,omitempty" gorm:"column:status"`
-	CreateDate     string `json:"createDate,omitempty" gorm:"column:create_date"`
-	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"`
-}
+//type Causerie struct {
+//	Id             int    `json:"id,omitempty" gorm:"column:id;primarykey"`
+//	Uid            int    `json:"uid,omitempty" gorm:"column:uid"`
+//	Content        string `json:"content,omitempty" gorm:"column:content"`
+//	Status         int    `json:"status,omitempty" gorm:"column:status"`
+//	CreateDate     string `json:"createDate,omitempty" gorm:"column:create_date"`
+//	LastUpdateDate string `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date"`
+//}

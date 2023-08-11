@@ -26,10 +26,16 @@ func UserAdd(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&data); err != nil {
 		response(ctx, err)
 		log.Fatalln("err", err)
-	} else {
-		result, err := modelUser.Insert(&data)
-		responseData(ctx, err, result)
+		return
 	}
+	if errs := validate.Struct(&data); errs != nil {
+		response(ctx, errs)
+		log.Println("errs", errs)
+		return
+	}
+
+	result, err := modelUser.Insert(&data)
+	responseData(ctx, err, result)
 }
 
 // UserUpdate 更新用户数据
@@ -38,16 +44,25 @@ func UserUpdate(ctx *gin.Context) {
 	if errBind := ctx.ShouldBindJSON(&data); errBind != nil {
 		response(ctx, errBind)
 		log.Fatalln("errBind", errBind)
-	} else {
-		err := modelUser.Update(&data)
-		response(ctx, err)
+		return
 	}
+	if errs := validate.Struct(&data); errs != nil {
+		response(ctx, errs)
+		log.Println("errs", errs)
+		return
+	}
+	err := modelUser.Update(&data)
+	response(ctx, err)
 }
 
 // UserDelete 删除用户
 func UserDelete(ctx *gin.Context) {
 	sId := ctx.Param("id")
 	id, _ := strconv.Atoi(sId)
+	if errs := validate.Var(id, "gt=0"); errs != nil {
+		response(ctx, errs)
+		return
+	}
 	err := modelUser.Delete(id)
 	response(ctx, err)
 }
@@ -59,6 +74,10 @@ func UserLogin(ctx *gin.Context) {
 	if errBind != nil {
 		response(ctx, errBind)
 		log.Fatalln("errBind:", errBind)
+		return
+	}
+	if errs := validate.Struct(&data); errs != nil {
+		response(ctx, errs)
 		return
 	}
 
@@ -84,6 +103,7 @@ func UserLogin(ctx *gin.Context) {
 
 // UserLogout 用户登出
 func UserLogout(ctx *gin.Context) {
+	// TODO 越权问题
 	sId := ctx.Query("id")
 	id, _ := strconv.Atoi(sId)
 	_, err := modelUser.UpdateUserUuid(id, true)

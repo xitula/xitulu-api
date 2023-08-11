@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 	t "xitulu/types"
 )
@@ -26,4 +27,10 @@ func responseData(c *gin.Context, err error, data interface{}) {
 	} else {
 		c.JSON(http.StatusOK, t.Res{Code: 0, Message: "ok", Data: data})
 	}
+}
+
+var validate *validator.Validate
+
+func init() {
+	validate = validator.New()
 }

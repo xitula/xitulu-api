@@ -4,15 +4,15 @@ import (
 	"errors"
 	"log"
 	"time"
-	t "xitulu/types"
+	"xitulu/types"
 	u "xitulu/utils"
 )
 
 // 随感
 type Causerie struct {
 	Id             int        `json:"id,omitempty" gorm:"column:id;primary"`
-	Uid            int        `json:"uid,omitempty" gorm:"column:uid"`
-	Content        string     `json:"content,omitempty" gorm:"column:content"`
+	Uid            int        `json:"uid,omitempty" validate:"required,gt=0" gorm:"column:uid"`
+	Content        string     `json:"content,omitempty" validate:"required,min=1,max=255" gorm:"column:content"`
 	Status         int        `json:"status,omitempty" gorm:"column:status"`
 	CreateDate     time.Time  `json:"createDate,omitempty" gorm:"column:create_date;default:null"`
 	LastUpdateDate *time.Time `json:"lastUpdateDate,omitempty" gorm:"column:last_update_date;default:null"`
@@ -30,7 +30,7 @@ func (c *Causerie) SelectAll() ([]Causerie, error) {
 }
 
 // SelectAllPage 分页获取全部随感
-func (c *Causerie) SelectAllPage(page *t.Pagination) ([]Causerie, int64, error) {
+func (c *Causerie) SelectAllPage(page *types.GetAllParam) ([]Causerie, int64, error) {
 	var data []Causerie
 	var count int64
 	offset := (page.CurrentPage - 1) * page.PageSize
@@ -60,8 +60,8 @@ func (c *Causerie) Insert(data *Causerie) error {
 
 // Update 依据ID更新随感数据
 func (c *Causerie) Update(id int, content string) error {
-	lastUpdateDate := u.GetMysqlNow()
-	result := db.Table("causeries").Where("id = ?", id).Updates(t.Causerie{Id: id, Content: content, LastUpdateDate: lastUpdateDate})
+	lastUpdateDate := time.Now()
+	result := db.Table("causeries").Where("id = ?", id).Updates(Causerie{Id: id, Content: content, LastUpdateDate: &lastUpdateDate})
 	errUpd := result.Error
 	if errUpd != nil {
 		log.Fatalln("UpdateCauserieError:", errUpd)

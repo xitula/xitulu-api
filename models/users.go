@@ -11,11 +11,11 @@ import (
 
 type User struct {
 	Id         int    `json:"id,omitempty" gorm:"column:id;primary"`
-	Username   string `json:"username" gorm:"column:username"`
-	Password   string `json:"password" gorm:"column:password"`
-	Nickname   string `json:"nickname,omitempty" gorm:"column:nickname;default:''"`
-	AvatarUrl  string `json:"avatarUrl,omitempty" gorm:"column:avatar_url;default:''"`
-	Email      string `json:"email,omitempty" gorm:"column:email"`
+	Username   string `json:"username" validate:"alphanum,min=5,max=20" gorm:"column:username"`
+	Password   string `json:"password" validate:"sha256" gorm:"column:password"`
+	Nickname   string `json:"nickname,omitempty" validate:"min=2,max=20" gorm:"column:nickname;default:''"`
+	AvatarUrl  string `json:"avatarUrl,omitempty" validate:"url" gorm:"column:avatar_url;default:''"`
+	Email      string `json:"email,omitempty" validate:"email" gorm:"column:email"`
 	Status     int    `json:"status" gorm:"column:status"`
 	CreateDate string `json:"createDate" gorm:"column:create_date"`
 	Token      string `json:"token,omitempty" gorm:"column:token;default:null"`

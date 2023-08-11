@@ -10,13 +10,13 @@ type Article struct {
 	// 文章ID
 	Id int `json:"id,omitempty" gorm:"primary"`
 	// 创建人ID
-	Uid int `json:"uid"`
+	Uid int `json:"uid" validate:"required,gt=0"`
 	// 标题
-	Title string `json:"title"`
+	Title string `json:"title" validate:"required,min=1,max=255"`
 	// 描述
-	Description *string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty" validate:"min=1,max=255"`
 	// 内容
-	Content string `json:"content"`
+	Content string `json:"content" validate:"required,min=1,max=65535"`
 	// 状态 0=删除 1=正常
 	State int `json:"state,omitempty"`
 	// 创建时间

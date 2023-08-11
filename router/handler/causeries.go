@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 	"xitulu/models"
-	t "xitulu/types"
+	"xitulu/types"
 )
 
 var modelCauserie models.Causerie
@@ -16,11 +16,17 @@ func init() {
 
 // CauseriesAll 获取全部随感
 func CauseriesAll(c *gin.Context) {
-	var page t.Pagination
-	page.CurrentPage, _ = strconv.Atoi(c.Query("currentPage"))
-	page.PageSize, _ = strconv.Atoi(c.Query("pageSize"))
-	if page.CurrentPage != 0 && page.PageSize != 0 {
-		data, count, errModel := modelCauserie.SelectAllPage(&page)
+	var params types.GetAllParam
+	if err := c.ShouldBindQuery(&params); err != nil {
+		response(c, err)
+		return
+	}
+	if err := validate.Struct(&params); err != nil {
+		response(c, err)
+		return
+	}
+	if params.CurrentPage != 0 && params.PageSize != 0 {
+		data, count, errModel := modelCauserie.SelectAllPage(&params)
 		responseData(c, errModel, map[string]interface{}{"list": data, "total": count})
 	} else {
 		data, errModel := modelCauserie.SelectAll()
@@ -30,10 +36,15 @@ func CauseriesAll(c *gin.Context) {
 
 // CauseriesAdd 新增随感
 func CauseriesAdd(c *gin.Context) {
+	// TODO 越权问题
 	var causerie models.Causerie
 	errBind := c.ShouldBindJSON(&causerie)
 	if errBind != nil {
 		response(c, errBind)
+		return
+	}
+	if errs := validate.Struct(&causerie); errs != nil {
+		response(c, errs)
 		return
 	}
 	causerie.CreateDate = time.Now()
@@ -44,10 +55,15 @@ func CauseriesAdd(c *gin.Context) {
 
 // CauseriesUpdate 更新随感
 func CauseriesUpdate(c *gin.Context) {
+	// TODO 越权问题
 	var causerie models.Causerie
 	errBind := c.ShouldBindJSON(&causerie)
 	if errBind != nil {
 		response(c, errBind)
+	}
+	if errs := validate.Struct(&causerie); errs != nil {
+		response(c, errs)
+		return
 	}
 	errUpdate := modelCauserie.Update(causerie.Id, causerie.Content)
 	response(c, errUpdate)
@@ -55,6 +71,7 @@ func CauseriesUpdate(c *gin.Context) {
 
 // CauseriesDelete 删除随感
 func CauseriesDelete(c *gin.Context) {
+	// TODO 越权问题
 	sId := c.Param("id")
 	id, _ := strconv.Atoi(sId)
 	errUpdate := modelCauserie.Delete(id)

@@ -5,27 +5,28 @@ import (
 	"errors"
 	"gorm.io/gorm/clause"
 	"log"
+	"xitulu/types"
 	u "xitulu/utils"
 )
 
 // Todo 待办模型
 type Todo struct {
-	Id             int           `json:"id" gorm:"column:id;primary"`                  // ID
-	Uid            int           `json:"uid"`                                          // 用户ID
-	Content        string        `json:"content"`                                      // 内容
-	Description    *string       `json:"description,omitempty" gorm:"default:null"`    // 描述，可选
-	Done           int           `json:"done,omitempty"`                               // 是否已完成
-	Status         int           `json:"status,omitempty" gorm:"default:1"`            // 条目状态
-	DoneOn         *sql.NullTime `json:"doneOn,omitempty" gorm:"default:null"`         // 完成时间
-	CreateDate     *sql.NullTime `json:"createDate,omitempty"`                         // 创建日期
-	LastUpdateDate *sql.NullTime `json:"lastUpdateDate,omitempty" gorm:"default:null"` // 最后更新日期，可选
+	Id             int           `json:"id" gorm:"column:id;primary"`                                          // ID
+	Uid            int           `json:"uid" validate:"required,gt=0"`                                         // 用户ID
+	Content        string        `json:"content" validate:"required,min=5,max=255"`                            // 内容
+	Description    *string       `json:"description,omitempty" validate:"min=5,max=65535" gorm:"default:null"` // 描述，可选
+	Done           int           `json:"done,omitempty" validate:"oneof=0 1"`                                  // 是否已完成
+	Status         int           `json:"status,omitempty" validate:"oneof=0 1" gorm:"default:1"`               // 条目状态
+	DoneOn         *sql.NullTime `json:"doneOn,omitempty" gorm:"default:null"`                                 // 完成时间
+	CreateDate     *sql.NullTime `json:"createDate,omitempty"`                                                 // 创建日期
+	LastUpdateDate *sql.NullTime `json:"lastUpdateDate,omitempty" gorm:"default:null"`                         // 最后更新日期，可选
 }
 
 // SelectByConditions 依据条件分页查询待办列表
-func (t *Todo) SelectByConditions(currentPage int, pageSize int, orderBy string, filterBy string) (interface{}, error) {
+func (t *Todo) SelectByConditions(params *types.GetAllParam) (interface{}, error) {
 	// 排序条件
 	var order string
-	switch orderBy {
+	switch params.OrderBy {
 	case "create-desc":
 		order = "create_date"
 	case "update-desc":
@@ -35,7 +36,7 @@ func (t *Todo) SelectByConditions(currentPage int, pageSize int, orderBy string,
 	}
 	// 是否已完成
 	var done int8
-	switch filterBy {
+	switch params.FilterBy {
 	case "tobe":
 		done = 0
 	case "done":
@@ -46,7 +47,7 @@ func (t *Todo) SelectByConditions(currentPage int, pageSize int, orderBy string,
 
 	var results []Todo
 	var count int64
-	start := (currentPage - 1) * pageSize
+	start := (params.CurrentPage - 1) * params.PageSize
 	if done == -1 {
 		db.
 			Table("todos").
@@ -54,7 +55,7 @@ func (t *Todo) SelectByConditions(currentPage int, pageSize int, orderBy string,
 			Count(&count).
 			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
 			Offset(start).
-			Limit(pageSize).
+			Limit(params.PageSize).
 			Find(&results)
 	} else {
 		db.
@@ -63,7 +64,7 @@ func (t *Todo) SelectByConditions(currentPage int, pageSize int, orderBy string,
 			Count(&count).
 			Order(clause.OrderByColumn{Column: clause.Column{Name: order}, Desc: true}).
 			Offset(start).
-			Limit(pageSize).
+			Limit(params.PageSize).
 			Find(&results)
 	}
 
